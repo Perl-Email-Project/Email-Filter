@@ -1,0 +1,175 @@
+NAME
+    Email::Filter - Library for creating easy email filters
+
+SYNOPSIS
+        use Email::Filter;
+        my $mail = Email::Filter->new(emergency => "~/emergency_mbox");
+        $mail->pipe("listgate", "p5p")         if $mail->from =~ /perl5-porters/;
+        $mail->accept("perl")                  if $mail->from =~ /perl/;
+        $mail->reject("We do not accept spam") if $mail->subject =~ /enlarge/;
+        $mail->ignore                          if $mail->subject =~ /boring/i;
+        ...
+        $mail->exit(0);
+        $mail->accept("~/Mail/Archive/backup");
+        $mail->exit(1);
+        $mail->accept()
+
+DESCRIPTION
+    This is another module produced by the "Perl Email Project", a reaction
+    against the complexity and increasing bugginess of the "Mail::*"
+    modules. It replaces "Mail::Audit", and allows you to write programs
+    describing how your mail should be filtered.
+
+TRIGGERS
+    Users of "Mail::Audit" will note that this class is much leaner than the
+    one it replaces. For instance, it has no logging; the concept of "local
+    options" has gone away, and so on. This is a deliberate design decision
+    to make the class as simple and maintainable as possible.
+
+    To make up for this, however, "Email::Filter" contains a trigger
+    mechanism provided by Class::Trigger, to allow you to add your own
+    functionality. You do this by calling the "add_trigger" method:
+
+        Email::Audit->add_trigger( after_accept => \&log_accept );
+
+    Hopefully this will also help subclassers.
+
+    The methods below will list which triggers they provide.
+
+ERROR RECOVERY
+    If something bad happens during the "accept" or "pipe" method, or the
+    "Email::Filter" object gets destroyed without being properly handled,
+    then a fail-safe error recovery process is called. This first checks for
+    the existence of the "emergency" setting, and tries to deliver to that
+    mailbox. If there is no emergency mailbox or that delivery failed, then
+    the program will either exit with a temporary failure error code,
+    queuing the mail for redelivery later, or produce a warning to standard
+    error, depending on the status of the "exit" setting.
+
+METHODS
+  new
+        Email::Filter->new();                # Read from STDIN
+        Email::Filter->new(data => $string); # Read from string
+
+        Email::Filter->new(emergency => "~simon/urgh");
+        # Deliver here in case of error
+
+    This takes an email either from standard input, the usual case when
+    called as a mail filter, or from a string.
+
+    You may also provide an "emergency" option, which is a filename to
+    deliver the mail to if it couldn't, for some reason, be handled
+    properly.
+
+    Hint
+       If you put your constructor in a "BEGIN" block, like so:
+
+           use Email::Filter;
+           BEGIN { $item = Email::Filter->new(emergency => "~simon/urgh"); }
+
+       right at the top of your mail filter script, you'll even be protected
+       from losing mail even in the case of syntax errors in your script.
+       How neat is that?
+
+    This method provides the "new" trigger, called once an object is
+    instantiated.
+
+  exit
+        $mail->exit(1|0);
+
+    Sets or clears the 'exit' flag which determines whether or not the
+    following methods exit after successful completion.
+
+    The sense-inverted 'noexit' method is also provided for backwards
+    compatibility with "Mail::Audit", but setting "noexit" to "yes" got a
+    bit mind-bending after a while.
+
+  simple
+        $mail->simple();
+
+    Gets and sets the underlying "Email::Simple" object for this filter; see
+    Email::Simple for more details.
+
+  header
+        $mail->header("X-Something")
+
+    Returns the specified mail headers. In scalar context, returns the first
+    such header; in list context, returns them all.
+
+  body
+        $mail->body()
+
+    Returns the body text of the email
+
+  from
+  to
+  cc
+  bcc
+  subject
+  received
+        $mail-><header>()
+
+    Convenience accessors for "header($header)"
+
+  ignore
+    Ignores this mail, exiting unconditionally unless "exit" has been set to
+    false.
+
+    This method provides the "ignore" trigger.
+
+  accept
+        $mail->accept();
+        $mail->accept(@where);
+
+    Accepts the mail into a given mailbox or mailboxes. Unix "~/" and
+    "~user/" prefices are resolved. If no mailbox is given, the default is
+    determined according to Email::LocalDelivery: $ENV{MAIL},
+    /var/spool/mail/you, /var/mail/you, or ~you/Maildir/.
+
+    This provides the "before_accept" and "after_accept" triggers, and exits
+    unless "exit" has been set to false.
+
+  reject
+        $mail->reject("Go away!");
+
+    This rejects the email; if called in a pipe from a mail transport agent,
+    (such as in a ~/.forward file) the mail will be bounced back to the
+    sender as undeliverable. If a reason is given, this will be included in
+    the bounce.
+
+    This calls the "reject" trigger. "exit" has no effect here.
+
+  pipe
+        $mail->pipe(qw[sendmail foo\@bar.com]);
+
+    Pipes the mail to an external program, returning the standard output
+    from that program if "exit" has been set to false. The program and each
+    of its arguments must be supplied in a list. This allows you to do
+    things like:
+
+        $mail->exit(0);
+        $mail->simple(Email::Simple->new($mail->pipe("spamassassin")));
+        $mail->exit(1);
+
+    in the absence of decent "Mail::SpamAssassin" support.
+
+    If the program returns a non-zero exit code, the behaviour is dependent
+    on the status of the "exit" flag. If this flag is set to true (the
+    default), then "Email::Filter" tries to recover. (See "ERROR RECOVERY")
+    If not, nothing is returned.
+
+COPYRIGHT
+        Copyright 2003, Simon Cozens <simon@cpan.org>
+
+LICENSE
+    You may use this module under the terms of the BSD, Artistic, or GPL
+    licenses, any version.
+
+AUTHOR
+    Casey West, "casey@geeknest.com"
+
+    Simon Cozens, "simon@cpan.org"
+
+SEE ALSO
+    http://pep,kwiki.org
+
