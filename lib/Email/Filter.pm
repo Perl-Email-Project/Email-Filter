@@ -142,10 +142,10 @@ sub new {
     my $data;
 
     {
-    local $/;
-    $data = exists $stuff{data} ? $stuff{data} : scalar <STDIN>;
-    # shave any leading From_ line
-    $data =~ s/^From .*?[\x0a\x0d]//
+      local $/;
+      $data = exists $stuff{data} ? $stuff{data} : scalar <STDIN>;
+      # shave any leading From_ line
+      $data =~ s/^From .*?[\x0a\x0d]//
     }
 
     my $obj = bless {
