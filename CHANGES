@@ -1,5 +1,9 @@
 Changes file for Email::Filter
 
+1.03    2006-07-21
+
+  - fix link to emailproject.perl.org
+
 1.02    2004-11-06
 
   - pipe() is now safe against IPC::Run::run() death, in the

@@ -1,5 +1,4 @@
 package Email::Filter;
-# $Id: Filter.pm,v 1.7 2004/11/06 19:00:31 cwest Exp $
 use strict;
 
 use Email::LocalDelivery;
@@ -11,7 +10,7 @@ use constant DELIVERED => 0;
 use constant TEMPFAIL  => 75;
 use constant REJECTED  => 100;
 
-$Email::Filter::VERSION = "1.02";
+$Email::Filter::VERSION = "1.03";
 
 =head1 NAME
 
