@@ -48,7 +48,7 @@ To make up for this, however, C<Email::Filter> contains a trigger
 mechanism provided by L<Class::Trigger>, to allow you to add your own
 functionality. You do this by calling the C<add_trigger> method:
 
-    Email::Audit->add_trigger( after_accept => \&log_accept );
+    Email::Filter->add_trigger( after_accept => \&log_accept );
 
 Hopefully this will also help subclassers.
 
