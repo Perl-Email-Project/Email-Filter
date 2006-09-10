@@ -333,7 +333,7 @@ sub pipe {
 
 This module is maintained by the Perl Email Project
 
-  L<http://emailproject.perl.org/wiki/Email::Filter>
+L<http://emailproject.perl.org/wiki/Email::Filter>
 
 =head1 COPYRIGHT
 
