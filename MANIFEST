@@ -8,3 +8,4 @@ t/Email-Filter.t
 t/josey-nofold
 t/pod-coverage.t
 t/pod.t
+LICENSE
