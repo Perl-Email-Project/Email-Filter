@@ -10,7 +10,7 @@ use constant DELIVERED => 0;
 use constant TEMPFAIL  => 75;
 use constant REJECTED  => 100;
 
-$Email::Filter::VERSION = "1.03";
+$Email::Filter::VERSION = "1.031";
 
 =head1 NAME
 
