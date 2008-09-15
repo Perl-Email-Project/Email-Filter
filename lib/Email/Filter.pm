@@ -10,7 +10,7 @@ use constant DELIVERED => 0;
 use constant TEMPFAIL  => 75;
 use constant REJECTED  => 100;
 
-$Email::Filter::VERSION = "1.031";
+$Email::Filter::VERSION = "1.032";
 
 =head1 NAME
 
@@ -84,8 +84,10 @@ sub fail_badly {
 
 sub fail_gracefully {
     my $self = shift;
-    if ($self->{emergency} and $self->accept($self->{emergency})) {
-        $self->done_ok; # That worked.
+    our $FAILING_GRACEFULLY;
+    if ($self->{emergency} and ! $FAILING_GRACEFULLY) {
+      local $FAILING_GRACEFULLY = 1;
+      $self->done_ok if $self->accept($self->{emergency});
     }
     $self->fail_badly;
 }
