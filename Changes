@@ -1,5 +1,8 @@
 Changes file for Email::Filter
 
+1.032     2008-09-14
+          attempt to address https://rt.cpan.org/Ticket/Display.html?id=31018
+
 1.031     2007-03-22
           packaging improvements
 
