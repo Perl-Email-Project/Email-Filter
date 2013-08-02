@@ -316,12 +316,25 @@ on the status of the C<exit> flag. If this flag is set to true (the
 default), then C<Email::Filter> tries to recover. (See L</ERROR RECOVERY>)
 If not, nothing is returned.
 
+If the last argument to C<pipe> is a reference to a hash, it is taken to
+contain parameters to modify how C<pipe> itself behaves.  The only useful
+parameter at this time is:
+
+  header_only - only pipe the header, not the body
+
 =cut
 
 sub pipe {
     my ($self, @program) = @_;
+    my $arg;
+    $arg = (ref $program[-1] eq 'HASH') ? (pop @program) : {};
+
     my $stdout;
-    my $string = $self->simple->as_string;
+
+    my $string = $arg->{header_only}
+               ? $self->simple->header_obj->as_string
+               : $self->simple->as_string;
+
     $self->call_trigger("pipe");
     if (eval {run(\@program, \$string, \$stdout)} ) {
         $self->done_ok;
