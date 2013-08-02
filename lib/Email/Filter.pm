@@ -251,17 +251,18 @@ C<$ENV{MAIL}>, F</var/spool/mail/you>, F</var/mail/you>, or
 F<~you/Maildir/>.
 
 This provides the C<before_accept> and C<after_accept> triggers, and
-exits unless C<exit> has been set to false.
+exits unless C<exit> has been set to false.  They are passed a reference to the
+C<@where> array.
 
 =cut
 
 sub accept {
-    my ($self, @boxes) = @_;
-    $self->call_trigger("before_accept");
+    my ($self, @where) = @_;
+    $self->call_trigger("before_accept", \@where);
     # Unparsing and reparsing is so fast we prefer to do that in order
     # to keep to LocalDelivery's clean interface.
-    if (Email::LocalDelivery->deliver($self->simple->as_string, @boxes)) {
-        $self->call_trigger("after_accept");
+    if (Email::LocalDelivery->deliver($self->simple->as_string, @where)) {
+        $self->call_trigger("after_accept", \@where);
         $self->done_ok;
     } else {
         $self->fail_gracefully();
@@ -326,7 +327,7 @@ sub pipe {
                ? $self->simple->header_obj->as_string
                : $self->simple->as_string;
 
-    $self->call_trigger("pipe");
+    $self->call_trigger("pipe", \@program, $arg);
     if (eval {run(\@program, \$string, \$stdout)} ) {
         $self->done_ok;
         return $stdout;
