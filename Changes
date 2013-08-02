@@ -1,5 +1,10 @@
 Changes file for Email::Filter
 
+{{$NEXT}}
+          ->pipe can now pipe only the header [rt.cpan.org #3126]
+
+          updated bugtracker, repo info
+
 1.032     2008-09-14
           attempt to address https://rt.cpan.org/Ticket/Display.html?id=31018
 
@@ -23,6 +28,6 @@ Changes file for Email::Filter
 
 1.0     	2nd May, 2003
         	Initial CPAN release
-        
+
 0.000_1   Sun Mar 16 14:18:44 2003
           Created

@@ -1,5 +1,6 @@
-package Email::Filter;
 use strict;
+package Email::Filter;
+# ABSTRACT: Library for creating easy email filters
 
 use Email::LocalDelivery;
 use Email::Simple;
@@ -9,12 +10,6 @@ use IPC::Run qw(run);
 use constant DELIVERED => 0;
 use constant TEMPFAIL  => 75;
 use constant REJECTED  => 100;
-
-$Email::Filter::VERSION = "1.032";
-
-=head1 NAME
-
-Email::Filter - Library for creating easy email filters
 
 =head1 SYNOPSIS
 
@@ -32,10 +27,8 @@ Email::Filter - Library for creating easy email filters
 
 =head1 DESCRIPTION
 
-This is another module produced by the "Perl Email Project", a reaction
-against the complexity and increasing bugginess of the "Mail::*"
-modules. It replaces C<Mail::Audit>, and allows you to write programs
-describing how your mail should be filtered.
+This module replaces C<procmail> or C<Mail::Audit>, and allows you to write
+programs describing how your mail should be filtered.
 
 =head1 TRIGGERS
 
@@ -100,9 +93,7 @@ sub DESTROY {
     $self->fail_gracefully();
 }
 
-=head1 METHODS
-
-=head2 new
+=method new
 
     Email::Filter->new();                # Read from STDIN
     Email::Filter->new(data => $string); # Read from string
@@ -158,7 +149,7 @@ sub new {
     return $obj;
 }
 
-=head2 exit
+=method exit
 
     $mail->exit(1|0);
 
@@ -174,7 +165,7 @@ bit mind-bending after a while.
 sub exit { $_[0]->{noexit} = !$_[1]; }
 sub noexit { $_[0]->{noexit} = $_[1]; }
 
-=head2 simple
+=method simple
 
     $mail->simple();
 
@@ -189,7 +180,7 @@ sub simple {
     return $filter->{mail};
 }
 
-=head2 header
+=method header
 
     $mail->header("X-Something")
 
@@ -200,7 +191,7 @@ first such header; in list context, returns them all.
 
 sub header { my ($mail, $head) = @_; $mail->simple->header($head); }
 
-=head2 body
+=method body
 
     $mail->body()
 
@@ -210,17 +201,17 @@ Returns the body text of the email
 
 sub body { $_[0]->simple->body }
 
-=head2 from
+=method from
 
-=head2 to
+=method to
 
-=head2 cc
+=method cc
 
-=head2 bcc
+=method bcc
 
-=head2 subject
+=method subject
 
-=head2 received
+=method received
 
     $mail-><header>()
 
@@ -228,13 +219,13 @@ Convenience accessors for C<header($header)>
 
 =cut
 
-{ no strict 'refs';
-for my $head (qw(From To CC Bcc Subject Received)) {
-    *{lc $head} = sub { $_[0]->header($head) }
-}
+{   no strict 'refs';
+    for my $head (qw(From To CC Bcc Subject Received)) {
+        *{lc $head} = sub { $_[0]->header($head) }
+    }
 }
 
-=head2 ignore
+=method ignore
 
 Ignores this mail, exiting unconditionally unless C<exit> has been set
 to false.
@@ -248,7 +239,7 @@ sub ignore {
     $_[0]->done_ok;
 }
 
-=head2 accept
+=method accept
 
     $mail->accept();
     $mail->accept(@where);
@@ -277,7 +268,7 @@ sub accept {
     }
 }
 
-=head2 reject
+=method reject
 
     $mail->reject("Go away!");
 
@@ -296,7 +287,7 @@ sub reject {
     $! = REJECTED; die @_,"\n";
 }
 
-=head2 pipe
+=method pipe
 
     $mail->pipe(qw[sendmail foo\@bar.com]);
 
@@ -343,28 +334,5 @@ sub pipe {
     $self->fail_gracefully() unless $self->{noexit};
     return;
 }
-
-=head1 PERL EMAIL PROJECT
-
-This module is maintained by the Perl Email Project
-
-L<http://emailproject.perl.org/wiki/Email::Filter>
-
-=head1 COPYRIGHT
-
-    Copyright 2003, Simon Cozens <simon@cpan.org>
-
-=head1 LICENSE
-
-You may use this module under the terms of the BSD, Artistic, or GPL licenses,
-any version.
-
-=head1 AUTHOR
-
-Casey West, C<casey@geeknest.com>
-
-Simon Cozens, C<simon@cpan.org>
-
-=cut
 
 1;
