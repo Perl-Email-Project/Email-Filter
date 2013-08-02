@@ -1,6 +1,8 @@
 Changes file for Email::Filter
 
 {{$NEXT}}
+
+1.033     2013-08-02 18:23:52 America/New_York
           ->pipe can now pipe only the header [rt.cpan.org #3126]
 
           updated bugtracker, repo info
