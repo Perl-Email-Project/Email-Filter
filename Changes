@@ -1,6 +1,7 @@
 Changes file for Email::Filter
 
 {{$NEXT}}
+          update support window: none; this is abandonware
 
 1.034     2013-12-31 10:12:19 America/New_York
           update github links
